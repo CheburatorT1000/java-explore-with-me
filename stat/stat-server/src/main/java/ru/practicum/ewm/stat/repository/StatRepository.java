@@ -14,19 +14,19 @@ public interface StatRepository extends JpaRepository<EndpointHit, Long> {
             "from EndpointHit as eh " +
             "where eh.timestamp between :start and :end " +
             "and eh.uri in (:uris) " +
-            "group by eh.uri " +
+            "group by eh.uri, eh.app " +
             "order by count(distinct(eh.ip)) desc ")
-    List<ViewStats> customFindAllByTimestampBetweenUnique(@Param("start")LocalDateTime start,
-                                                          @Param("end")LocalDateTime end,
-                                                          @Param("uris")List<String> uris);
+    List<ViewStats> customFindAllByTimestampBetweenUnique(@Param("start") LocalDateTime start,
+                                                          @Param("end") LocalDateTime end,
+                                                          @Param("uris") List<String> uris);
 
     @Query("select new ru.practicum.ewm.stat.model.ViewStats(eh.app, eh.uri, count(eh.uri)) " +
             "from EndpointHit as eh " +
             "where eh.timestamp between :start and :end " +
             "and eh.uri in (:uris) " +
-            "group by eh.uri " +
+            "group by eh.uri, eh.app  " +
             "order by count(eh.uri) desc ")
-    List<ViewStats> customFindAllByTimestampBetween(@Param("start")LocalDateTime start,
-                                                    @Param("end")LocalDateTime end,
-                                                    @Param("uris")List<String> uris);
+    List<ViewStats> customFindAllByTimestampBetween(@Param("start") LocalDateTime start,
+                                                    @Param("end") LocalDateTime end,
+                                                    @Param("uris") List<String> uris);
 }

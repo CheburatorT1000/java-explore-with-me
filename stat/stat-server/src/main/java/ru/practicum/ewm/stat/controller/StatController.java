@@ -31,8 +31,8 @@ public class StatController {
                                        @RequestParam(required = false) List<String> uris,
                                        @RequestParam(defaultValue = "false") boolean unique) {
         return statService.getStats(LocalDateTime.parse(start, formatter),
-                                    LocalDateTime.parse(end, formatter),
-                                    uris,
-                                    unique);
+                LocalDateTime.parse(end, formatter),
+                uris,
+                unique);
     }
 }
