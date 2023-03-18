@@ -34,7 +34,7 @@ public class StatServiceImpl implements StatService {
                                        boolean unique) {
         List<ViewStats> viewStats;
 
-        if(uris == null || uris.isEmpty())
+        if (uris == null || uris.isEmpty())
             uris = Collections.emptyList();
 
         if (unique) {

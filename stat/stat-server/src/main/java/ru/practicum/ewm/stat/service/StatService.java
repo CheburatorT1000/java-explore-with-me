@@ -1,6 +1,5 @@
 package ru.practicum.ewm.stat.service;
 
-import org.springframework.http.ResponseEntity;
 import ru.practicum.EndpointHitDTO;
 import ru.practicum.ViewStatsDTO;
 import ru.practicum.ewm.stat.model.EndpointHit;
