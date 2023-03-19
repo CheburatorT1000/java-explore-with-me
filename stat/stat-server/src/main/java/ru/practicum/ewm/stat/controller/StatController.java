@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatController {
 
-    public static String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    public static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TIME_PATTERN);
     private final StatService statService;
 
