@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class WebClientService {
     protected final WebClient webClient;
-    public static String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    public static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TIME_PATTERN);
 
     public WebClientService(WebClient.Builder webClientBuilder) {
