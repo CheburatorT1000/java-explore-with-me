@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.EndpointHitDTO;
 import ru.practicum.ViewStatsDTO;
-import ru.practicum.ewm.stat.model.EndpointHit;
 import ru.practicum.ewm.stat.service.StatService;
 
 import javax.validation.Valid;
@@ -21,7 +20,7 @@ public class StatController {
     private final StatService statService;
 
     @PostMapping("/hit")
-    public EndpointHit hit(@RequestBody @Valid EndpointHitDTO endpointHitDTO) {
+    public EndpointHitDTO hit(@RequestBody @Valid EndpointHitDTO endpointHitDTO) {
         return statService.postHit(endpointHitDTO);
     }
 

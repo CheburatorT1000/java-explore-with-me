@@ -22,9 +22,9 @@ public class StatServiceImpl implements StatService {
     private final StatRepository statRepository;
 
     @Override
-    public EndpointHit postHit(EndpointHitDTO endpointHitDTO) {
+    public EndpointHitDTO postHit(EndpointHitDTO endpointHitDTO) {
         EndpointHit endpointHit = EndpointMapper.ENDPOINT_MAPPER.fromDto(endpointHitDTO);
-        return statRepository.save(endpointHit);
+        return EndpointMapper.ENDPOINT_MAPPER.toEndpointHitDto(statRepository.save(endpointHit));
     }
 
     @Override

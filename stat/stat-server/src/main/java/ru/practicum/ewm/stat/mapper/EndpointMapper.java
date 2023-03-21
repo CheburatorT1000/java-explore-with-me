@@ -13,5 +13,7 @@ public interface EndpointMapper {
 
     EndpointHit fromDto(EndpointHitDTO endpointHitDTO);
 
-    ViewStatsDTO toDto(EndpointHit endpointHit);
+    ViewStatsDTO toViewDto(EndpointHit endpointHit);
+
+    EndpointHitDTO toEndpointHitDto(EndpointHit endpointHit);
 }

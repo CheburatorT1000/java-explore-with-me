@@ -41,7 +41,7 @@ public class WebClientService {
                                        LocalDateTime end,
                                        List<String> uris,
                                        boolean unique) {
-        return this.webClient.get()
+        return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/stats")
                         .queryParam(String.valueOf(start))
