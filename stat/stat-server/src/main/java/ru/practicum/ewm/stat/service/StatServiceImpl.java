@@ -34,7 +34,6 @@ public class StatServiceImpl implements StatService {
 
         return statRepository.getStats(start, end, uris, unique).stream()
                 .map(ViewStatsMapper.VIEW_STATS_MAPPER::toDto)
-                .sorted(Comparator.comparingLong(ViewStatsDTO::getHits).reversed())
                 .collect(Collectors.toList());
     }
 }

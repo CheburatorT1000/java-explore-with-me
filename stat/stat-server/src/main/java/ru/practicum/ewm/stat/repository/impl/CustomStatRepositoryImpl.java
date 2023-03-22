@@ -45,6 +45,9 @@ public class CustomStatRepositoryImpl implements CustomStatRepository {
                 statsRoot.get("ip")
         );
 
+        criteriaQuery.orderBy(criteriaBuilder
+                .desc(unique ? criteriaBuilder.countDistinct(statsRoot.get("ip")) : criteriaBuilder.count(statsRoot.get("ip"))));
+
         predicateList.add(criteriaBuilder.between(statsRoot.get("timestamp"), start, end));
 
         if(uris != null)
