@@ -7,11 +7,10 @@ import ru.practicum.ViewStatsDTO;
 import ru.practicum.ewm.stat.mapper.EndpointMapper;
 import ru.practicum.ewm.stat.mapper.ViewStatsMapper;
 import ru.practicum.ewm.stat.model.EndpointHit;
-import ru.practicum.ewm.stat.model.ViewStats;
 import ru.practicum.ewm.stat.repository.StatRepository;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,19 +31,10 @@ public class StatServiceImpl implements StatService {
                                        LocalDateTime end,
                                        List<String> uris,
                                        boolean unique) {
-        List<ViewStats> viewStats;
 
-        if (uris == null || uris.isEmpty())
-            uris = Collections.emptyList();
-
-        if (unique) {
-            viewStats = statRepository.customFindAllByTimestampBetweenUnique(start, end, uris);
-        } else {
-            viewStats = statRepository.customFindAllByTimestampBetween(start, end, uris);
-        }
-
-        return viewStats.stream()
+        return statRepository.getStats(start, end, uris, unique).stream()
                 .map(ViewStatsMapper.VIEW_STATS_MAPPER::toDto)
+                .sorted(Comparator.comparingLong(ViewStatsDTO::getHits).reversed())
                 .collect(Collectors.toList());
     }
 }
