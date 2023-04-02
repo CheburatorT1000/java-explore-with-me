@@ -86,13 +86,7 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
             where.and(QEvent.event.category.id.in(categories));
         }
 
-        if (rangeStart != null) {
-            where.and(QEvent.event.eventDate.after(rangeStart));
-        }
-
-        if (rangeEnd != null) {
-            where.and(QEvent.event.eventDate.before(rangeEnd));
-        }
+        where.and(QEvent.event.eventDate.between(rangeStart, rangeEnd));
 
         if (rangeStart == null && rangeEnd == null) {
             where.and(QEvent.event.eventDate.after(LocalDateTime.now()));

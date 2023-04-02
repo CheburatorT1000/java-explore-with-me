@@ -78,9 +78,6 @@ public class EventServiceImpl implements EventService {
         if (eventDto.getEventDate() != null && eventDto.getEventDate().isBefore(LocalDateTime.now())) {
             throw new ForbiddenException("Нельзя изменить дату события на прошедшее время!");
         }
-//        if (event.getEventDate().minusHours(1).isAfter(LocalDateTime.now())) {
-//            throw new ForbiddenException("Событие не удовлетворяет правилам редактирования по времени");
-//        }
 
         if (!event.getState().equals(Status.PENDING)) {
             throw new ForbiddenException("Событие не удовлетворяет правилам редактирования по статусу");
@@ -140,6 +137,14 @@ public class EventServiceImpl implements EventService {
 
         Status defaultStatus = Status.PUBLISHED;
 
+        if (rangeStart == null) {
+            rangeStart = LocalDateTime.now().minusYears(10);
+        }
+
+        if (rangeEnd == null) {
+            rangeEnd = LocalDateTime.now().plusYears(10);
+        }
+
         List<Event> events = eventRepository.publicGetEventsByParams(
                 text,
                 categories,
@@ -160,7 +165,7 @@ public class EventServiceImpl implements EventService {
         getConfirmedRequestsForEventFullDtos(eventFullDtos);
 
         if (sort != null && sort.equals(SortEnum.VIEWS)) {
-            eventFullDtos.sort(Comparator.comparing(EventFullDto::getViews).reversed());
+            eventFullDtos.sort(Comparator.comparing(EventFullDto::getViews));
         }
         return eventFullDtos;
     }
@@ -348,7 +353,7 @@ public class EventServiceImpl implements EventService {
                                           List<EventFullDto> eventFullDtos) {
         boolean isUniqueIp = false;
         if (start == null) {
-            start = LocalDateTime.now();
+            start = LocalDateTime.now().minusYears(100);
         }
         if (end == null) {
             end = LocalDateTime.now().plusYears(100);
