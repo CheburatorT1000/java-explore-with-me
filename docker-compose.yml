@@ -12,7 +12,7 @@ services:
       - SPRING.DATASOURCE.PASSWORD=postgres
 
   stats-db:
-    image: postgres:13.7-alpine
+    image: postgres:15-alpine
     ports:
       - "6541:5432"
     environment:
@@ -26,15 +26,14 @@ services:
       - "8080:8080"
     depends_on:
       - ewm-db
-      - stats-server
     environment:
-      - STAT_SERVER_URL=http://ewm-db:9090
+      - STAT_SERVER_URL=http://stats-server:9090
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/main-db
       - SPRING.DATASOURCE.USERNAME=postgres
       - SPRING.DATASOURCE.PASSWORD=postgres
 
   ewm-db:
-    image: postgres:13.7-alpine
+    image: postgres:15-alpine
     ports:
       - "6542:5432"
     environment:

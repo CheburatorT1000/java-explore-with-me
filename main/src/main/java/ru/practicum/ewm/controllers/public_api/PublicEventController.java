@@ -31,7 +31,7 @@ public class PublicEventController {
                                                 LocalDateTime rangeStart,
                                                 @RequestParam(required = false) @DateTimeFormat(pattern = Constants.TIME_PATTERN)
                                                 LocalDateTime rangeEnd,
-                                                @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                                @RequestParam(defaultValue = "false") boolean onlyAvailable,
                                                 @RequestParam(required = false) SortEnum sort,
                                                 @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                 @Positive @RequestParam(defaultValue = "10") Integer size,
