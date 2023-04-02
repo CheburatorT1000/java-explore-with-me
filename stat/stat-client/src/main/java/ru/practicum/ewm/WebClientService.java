@@ -16,7 +16,7 @@ public class WebClientService {
     public static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TIME_PATTERN);
 
-    public WebClientService(WebClient.Builder webClientBuilder, @Value("${stat-server.url}")String baseUrl) {
+    public WebClientService(WebClient.Builder webClientBuilder, @Value("${stat-server.url}") String baseUrl) {
         this.baseUrl = baseUrl;
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
@@ -44,7 +44,7 @@ public class WebClientService {
                                        LocalDateTime end,
                                        List<String> uris,
                                        boolean unique) {
-        
+
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/stats")

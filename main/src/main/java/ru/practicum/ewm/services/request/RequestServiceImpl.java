@@ -2,12 +2,12 @@ package ru.practicum.ewm.services.request;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.entity.model.Event;
-import ru.practicum.ewm.entity.model.Request;
 import ru.practicum.ewm.entity.dto.request.ParticipationRequestDto;
 import ru.practicum.ewm.entity.enums.RequestStatus;
 import ru.practicum.ewm.entity.enums.Status;
 import ru.practicum.ewm.entity.mapper.RequestMapper;
+import ru.practicum.ewm.entity.model.Event;
+import ru.practicum.ewm.entity.model.Request;
 import ru.practicum.ewm.entity.model.User;
 import ru.practicum.ewm.exception.ForbiddenException;
 import ru.practicum.ewm.exception.NotFoundException;
@@ -41,7 +41,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto privateApiPostRequest(Long userId, Long eventId) {
-        if(requestRepository.findByRequesterIdAndEventId(userId, eventId).isPresent()) {
+        if (requestRepository.findByRequesterIdAndEventId(userId, eventId).isPresent()) {
             throw new ForbiddenException("Запрос на участие уже существует");
         }
 
@@ -50,15 +50,15 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено!"));
 
-        if(event.getInitiator().getId().equals(userId)) {
+        if (event.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Инициатор события не может добавить запрос на участие в своём событии!");
         }
 
-        if(!event.getState().equals(Status.PUBLISHED)) {
+        if (!event.getState().equals(Status.PUBLISHED)) {
             throw new ForbiddenException("Нельзя добавить запрос на участие в не опубликованном событии!");
         }
 
-        if(requestRepository.findByEventIdAndStatus(eventId, RequestStatus.CONFIRMED).size() == event.getParticipantLimit()) {
+        if (requestRepository.findByEventIdAndStatus(eventId, RequestStatus.CONFIRMED).size() == event.getParticipantLimit()) {
             throw new ForbiddenException("У события достигнут лимит запросов на участие");
         }
 

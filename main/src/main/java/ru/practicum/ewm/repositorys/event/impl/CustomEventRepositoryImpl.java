@@ -1,15 +1,14 @@
 package ru.practicum.ewm.repositorys.event.impl;
 
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.ewm.entity.model.QEvent;
 import ru.practicum.ewm.entity.enums.SortEnum;
 import ru.practicum.ewm.entity.enums.Status;
 import ru.practicum.ewm.entity.model.Event;
+import ru.practicum.ewm.entity.model.QEvent;
 import ru.practicum.ewm.repositorys.event.CustomEventRepository;
 
 import javax.persistence.EntityManager;

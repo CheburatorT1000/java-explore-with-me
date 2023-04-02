@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.EndpointHitDTO;
 import ru.practicum.ewm.ViewStatsDTO;
-import ru.practicum.ewm.model.EndpointHit;
-import ru.practicum.ewm.repository.StatRepository;
 import ru.practicum.ewm.mapper.EndpointMapper;
 import ru.practicum.ewm.mapper.ViewStatsMapper;
+import ru.practicum.ewm.model.EndpointHit;
+import ru.practicum.ewm.repository.StatRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

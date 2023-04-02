@@ -29,10 +29,10 @@ public class AdminUserController {
 
     @GetMapping
     public List<UserDto> findAllByIdIn(@RequestParam(required = false) List<Long> ids,
-                                 @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                 @Positive @RequestParam(defaultValue = "10") Integer size) {
+                                       @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                       @Positive @RequestParam(defaultValue = "10") Integer size) {
 
-        if(ids == null || ids.isEmpty())
+        if (ids == null || ids.isEmpty())
             return Collections.emptyList();
 
         return userService.findAllByIdIn(ids, from, size);

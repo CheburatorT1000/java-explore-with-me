@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public CategoryDto save (NewCategoryDto categoryDto) {
+    public CategoryDto save(NewCategoryDto categoryDto) {
         Category category = categoryMapper.fromNewDto(categoryDto);
 
         return categoryMapper.toDto(categoryRepository.save(category));
@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Категория не существует!"));
 
-        if(categoryDto.getName() != null)
+        if (categoryDto.getName() != null)
             category.setName(categoryDto.getName());
 
         return categoryMapper.toDto(categoryRepository.save(category));

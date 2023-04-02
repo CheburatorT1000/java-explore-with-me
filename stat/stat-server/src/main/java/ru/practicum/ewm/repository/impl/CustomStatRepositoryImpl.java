@@ -48,7 +48,7 @@ public class CustomStatRepositoryImpl implements CustomStatRepository {
 
         predicateList.add(criteriaBuilder.between(statsRoot.get("timestamp"), start, end));
 
-        if(uris != null)
+        if (uris != null)
             predicateList.add(criteriaBuilder.and(statsRoot.get("uri").in(uris)));
 
         criteriaQuery.where(predicateList.toArray(Predicate[]::new));

@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class StatController {
                                        @RequestParam String end,
                                        @RequestParam(required = false) List<String> uris,
                                        @RequestParam(defaultValue = "false") boolean unique) {
-        log.info("{}, {}, {}, {}",start, end, uris, unique);
+        log.info("{}, {}, {}, {}", start, end, uris, unique);
 
         return statService.getStats(LocalDateTime.parse(start, formatter),
                 LocalDateTime.parse(end, formatter),

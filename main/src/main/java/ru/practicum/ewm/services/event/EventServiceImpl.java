@@ -75,7 +75,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено!"));
 
-        if(eventDto.getEventDate() != null && eventDto.getEventDate().isBefore(LocalDateTime.now())) {
+        if (eventDto.getEventDate() != null && eventDto.getEventDate().isBefore(LocalDateTime.now())) {
             throw new ForbiddenException("Нельзя изменить дату события на прошедшее время!");
         }
 //        if (event.getEventDate().minusHours(1).isAfter(LocalDateTime.now())) {
@@ -111,7 +111,7 @@ public class EventServiceImpl implements EventService {
             if (eventDto.getStateAction().equals(StateActionEnum.PUBLISH_EVENT) && event.getState().equals(Status.PENDING)) {
                 event.setPublishedOn(LocalDateTime.now());
                 event.setState(Status.PUBLISHED);
-            } else if(eventDto.getStateAction().equals(StateActionEnum.REJECT_EVENT) && !event.getState().equals(Status.PUBLISHED)) {
+            } else if (eventDto.getStateAction().equals(StateActionEnum.REJECT_EVENT) && !event.getState().equals(Status.PUBLISHED)) {
                 event.setState(Status.CANCELED);
             } else
                 throw new ForbiddenException("Событие не удовлетворяет правилам редактирования по статусу");
@@ -230,7 +230,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено!"));
 
-        if(eventUserRequest.getEventDate() != null && eventUserRequest.getEventDate().isBefore(LocalDateTime.now())) {
+        if (eventUserRequest.getEventDate() != null && eventUserRequest.getEventDate().isBefore(LocalDateTime.now())) {
             throw new ForbiddenException("Нельзя изменить дату события на прошедшее время!");
         }
 
@@ -289,7 +289,7 @@ public class EventServiceImpl implements EventService {
     public EventRequestStatusUpdateResult privatePatchRequests(Long userId,
                                                                Long eventId,
                                                                EventRequestStatusUpdateRequest updateRequest) {
-        log.info("{},{},{}",userId, eventId, updateRequest.toString());
+        log.info("{},{},{}", userId, eventId, updateRequest.toString());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
