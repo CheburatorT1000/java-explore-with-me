@@ -1,9 +1,14 @@
 package ru.practicum.ewm.controllers.public_api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.entity.dto.event.EventFullDto;
 import ru.practicum.ewm.entity.enums.SortEnum;
 import ru.practicum.ewm.services.event.EventService;
@@ -15,6 +20,7 @@ import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/events")
@@ -36,13 +42,17 @@ public class PublicEventController {
                                                 @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                 @Positive @RequestParam(defaultValue = "10") Integer size,
                                                 HttpServletRequest request) {
-        return eventService.publicGetByParams(text, categories, paid, rangeStart,
+        log.info("PublicAPI EventController, getByParams, text: {}, categories: {}, paid: {}, rangeStart: {}," +
+                        "rangeEnd: {}, onlyAvailable: {}, sort: {}, from: {}, size: {}, request: {}",
+                text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request.toString());
+        return eventService.getByParamsPublicAPI(text, categories, paid, rangeStart,
                 rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto publicGetEvent(@Positive @PathVariable Long eventId,
                                        HttpServletRequest request) {
-        return eventService.publicGetEvent(eventId, request);
+        log.info("PublicAPI EventController, getById, eventId: {}", eventId);
+        return eventService.getByIdPublicAPI(eventId, request);
     }
 }

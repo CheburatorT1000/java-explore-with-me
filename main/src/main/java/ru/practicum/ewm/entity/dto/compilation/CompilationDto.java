@@ -6,6 +6,7 @@ import ru.practicum.ewm.entity.dto.event.EventShortDto;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
+@ToString
 @Getter
 @Setter
 @Builder

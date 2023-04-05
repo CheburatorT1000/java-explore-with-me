@@ -31,7 +31,7 @@ public class RequestServiceImpl implements RequestService {
 
 
     @Override
-    public List<ParticipationRequestDto> privateApiGetUserRequests(Long userId) {
+    public List<ParticipationRequestDto> findByRequesterId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
         return requestRepository.findByRequesterId(userId).stream()
@@ -40,7 +40,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public ParticipationRequestDto privateApiPostRequest(Long userId, Long eventId) {
+    public ParticipationRequestDto findByRequesterIdAndEventId(Long userId, Long eventId) {
         if (requestRepository.findByRequesterIdAndEventId(userId, eventId).isPresent()) {
             throw new ForbiddenException("Запрос на участие уже существует");
         }
@@ -72,8 +72,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public ParticipationRequestDto privateApiCancelRequest(Long userId,
-                                                           Long requestId) {
+    public ParticipationRequestDto cancelRequest(Long userId,
+                                                 Long requestId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
         Request request = requestRepository.findById(requestId)

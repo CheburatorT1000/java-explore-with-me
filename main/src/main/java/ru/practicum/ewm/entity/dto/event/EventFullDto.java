@@ -10,6 +10,7 @@ import ru.practicum.ewm.utils.Constants;
 
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
 @Setter
 @Builder

@@ -12,29 +12,29 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
-    List<EventFullDto> adminGetByParams(List<Long> users,
-                                        List<Status> states,
-                                        List<Long> categories,
-                                        LocalDateTime rangeStart,
-                                        LocalDateTime rangeEnd,
-                                        Integer from,
-                                        Integer size);
+    List<EventFullDto> getByParamsAdminAPI(List<Long> users,
+                                           List<Status> states,
+                                           List<Long> categories,
+                                           LocalDateTime rangeStart,
+                                           LocalDateTime rangeEnd,
+                                           Integer from,
+                                           Integer size);
 
-    EventFullDto adminPatchEvent(Long eventId, UpdateEventAdminRequest eventDto);
+    EventFullDto patchAdminAPI(Long eventId, UpdateEventAdminRequest eventDto);
 
-    List<EventFullDto> publicGetByParams(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable, SortEnum sort, Integer from, Integer size, HttpServletRequest request);
+    List<EventFullDto> getByParamsPublicAPI(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable, SortEnum sort, Integer from, Integer size, HttpServletRequest request);
 
-    EventFullDto publicGetEvent(Long eventId, HttpServletRequest request);
+    EventFullDto getByIdPublicAPI(Long eventId, HttpServletRequest request);
 
-    List<EventShortDto> privateGetEventsByUser(Long userId, Integer from, Integer size);
+    List<EventShortDto> getAllByUserIdPrivateAPI(Long userId, Integer from, Integer size);
 
-    EventFullDto privatePostEvent(Long userId, NewEventDto eventDto);
+    EventFullDto postPrivateAPI(Long userId, NewEventDto eventDto);
 
-    EventFullDto privateGetEventById(Long userId, Long eventId);
+    EventFullDto findByIdAndInitiatorIdPrivateAPI(Long userId, Long eventId);
 
-    EventFullDto privatePatchEventByUser(Long userId, Long eventId, UpdateEventUserRequest eventFullDto);
+    EventFullDto patchPrivateAPI(Long userId, Long eventId, UpdateEventUserRequest eventFullDto);
 
-    List<ParticipationRequestDto> privateGetRequests(Long userId, Long eventId);
+    List<ParticipationRequestDto> findRequestsByIdAndInitiatorId(Long userId, Long eventId);
 
-    EventRequestStatusUpdateResult privatePatchRequests(Long userId, Long eventId, EventRequestStatusUpdateRequest updateRequest);
+    EventRequestStatusUpdateResult patchRequests(Long userId, Long eventId, EventRequestStatusUpdateRequest updateRequest);
 }

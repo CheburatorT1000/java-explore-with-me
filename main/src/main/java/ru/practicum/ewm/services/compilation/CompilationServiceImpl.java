@@ -30,7 +30,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final CompilationMapper compilationMapper;
 
     @Override
-    public CompilationDto adminPostCompilation(NewCompilationDto newCompilationDto) {
+    public CompilationDto post(NewCompilationDto newCompilationDto) {
         Set<Event> events;
         Compilation compilation = Compilation.builder().build();
 
@@ -53,13 +53,13 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public void adminDeleteCompilation(Long compilationId) {
+    public void deleteById(Long compilationId) {
         compilationRepository.deleteById(compilationId);
     }
 
     @Override
-    public CompilationDto adminPatchCompilation(Long compilationId,
-                                                UpdateCompilationRequest request) {
+    public CompilationDto patch(Long compilationId,
+                                UpdateCompilationRequest request) {
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new NotFoundException("Подборка событий не существует"));
         Set<Event> events = new HashSet<>();
@@ -81,14 +81,14 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public CompilationDto publicGetCompilation(Long compId) {
+    public CompilationDto getById(Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка событий не существует"));
         return compilationMapper.toDto(compilation);
     }
 
     @Override
-    public List<CompilationDto> publicGetCompilations(Boolean pinned, Integer from, Integer size) {
+    public List<CompilationDto> getAllByParams(Boolean pinned, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
         if (pinned != null && pinned) {
             return compilationRepository.findAllByPinned(pinned, pageable).stream()

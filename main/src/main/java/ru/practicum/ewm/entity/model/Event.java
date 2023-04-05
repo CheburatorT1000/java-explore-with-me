@@ -6,6 +6,7 @@ import ru.practicum.ewm.entity.enums.Status;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor

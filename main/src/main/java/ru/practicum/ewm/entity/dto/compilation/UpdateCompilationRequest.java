@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.util.Set;
 
+@ToString
 @Getter
 @Setter
 @Builder

@@ -7,7 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.ViewStatsDTO;
 import ru.practicum.ewm.WebClientService;
-import ru.practicum.ewm.entity.dto.event.*;
+import ru.practicum.ewm.entity.dto.event.EventFullDto;
+import ru.practicum.ewm.entity.dto.event.EventShortDto;
+import ru.practicum.ewm.entity.dto.event.NewEventDto;
+import ru.practicum.ewm.entity.dto.event.UpdateEventAdminRequest;
+import ru.practicum.ewm.entity.dto.event.UpdateEventUserRequest;
 import ru.practicum.ewm.entity.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.entity.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.entity.dto.request.ParticipationRequestDto;
@@ -17,7 +21,11 @@ import ru.practicum.ewm.entity.enums.StateActionEnum;
 import ru.practicum.ewm.entity.enums.Status;
 import ru.practicum.ewm.entity.mapper.EventMapper;
 import ru.practicum.ewm.entity.mapper.RequestMapper;
-import ru.practicum.ewm.entity.model.*;
+import ru.practicum.ewm.entity.model.Category;
+import ru.practicum.ewm.entity.model.Event;
+import ru.practicum.ewm.entity.model.Location;
+import ru.practicum.ewm.entity.model.Request;
+import ru.practicum.ewm.entity.model.User;
 import ru.practicum.ewm.exception.BadInputDataException;
 import ru.practicum.ewm.exception.ForbiddenException;
 import ru.practicum.ewm.exception.NotFoundException;
@@ -30,7 +38,11 @@ import ru.practicum.ewm.repositorys.event.EventRepository;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -50,13 +62,13 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public List<EventFullDto> adminGetByParams(List<Long> users,
-                                               List<Status> states,
-                                               List<Long> categories,
-                                               LocalDateTime rangeStart,
-                                               LocalDateTime rangeEnd,
-                                               Integer from,
-                                               Integer size) {
+    public List<EventFullDto> getByParamsAdminAPI(List<Long> users,
+                                                  List<Status> states,
+                                                  List<Long> categories,
+                                                  LocalDateTime rangeStart,
+                                                  LocalDateTime rangeEnd,
+                                                  Integer from,
+                                                  Integer size) {
 
         return eventRepository.adminGetEventsByParams(
                         users,
@@ -71,12 +83,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto adminPatchEvent(Long eventId, UpdateEventAdminRequest eventDto) {
+    public EventFullDto patchAdminAPI(Long eventId, UpdateEventAdminRequest eventDto) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено!"));
 
         if (eventDto.getEventDate() != null && eventDto.getEventDate().isBefore(LocalDateTime.now())) {
             throw new ForbiddenException("Нельзя изменить дату события на прошедшее время!");
+        }
+
+        if (eventDto.getEventDate() != null && eventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new ForbiddenException("Дата события не может быть раньше 2 часов от текущего времени!");
         }
 
         if (!event.getState().equals(Status.PENDING)) {
@@ -117,16 +133,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> publicGetByParams(String text,
-                                                List<Long> categories,
-                                                Boolean paid,
-                                                LocalDateTime rangeStart,
-                                                LocalDateTime rangeEnd,
-                                                Boolean onlyAvailable,
-                                                SortEnum sort,
-                                                Integer from,
-                                                Integer size,
-                                                HttpServletRequest request) {
+    public List<EventFullDto> getByParamsPublicAPI(String text,
+                                                   List<Long> categories,
+                                                   Boolean paid,
+                                                   LocalDateTime rangeStart,
+                                                   LocalDateTime rangeEnd,
+                                                   Boolean onlyAvailable,
+                                                   SortEnum sort,
+                                                   Integer from,
+                                                   Integer size,
+                                                   HttpServletRequest request) {
 
         webClientService.postHit(
                 "ewm-main-service",
@@ -165,13 +181,13 @@ public class EventServiceImpl implements EventService {
         getConfirmedRequestsForEventFullDtos(eventFullDtos);
 
         if (sort != null && sort.equals(SortEnum.VIEWS)) {
-            eventFullDtos.sort(Comparator.comparing(EventFullDto::getViews));
+            eventFullDtos.sort(Comparator.comparing(EventFullDto::getViews).reversed());
         }
         return eventFullDtos;
     }
 
     @Override
-    public EventFullDto publicGetEvent(Long eventId, HttpServletRequest request) {
+    public EventFullDto getByIdPublicAPI(Long eventId, HttpServletRequest request) {
         webClientService.postHit(
                 "ewm-main-service",
                 request.getRequestURI(),
@@ -188,7 +204,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> privateGetEventsByUser(Long userId, Integer from, Integer size) {
+    public List<EventShortDto> getAllByUserIdPrivateAPI(Long userId, Integer from, Integer size) {
 
         Pageable pageable = PageRequest.of(from, size);
         return eventRepository.findByInitiatorId(userId, pageable).stream()
@@ -197,7 +213,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto privatePostEvent(Long userId, NewEventDto eventDto) {
+    public EventFullDto postPrivateAPI(Long userId, NewEventDto eventDto) {
         Category category = categoryRepository.findById(eventDto.getCategory())
                 .orElseThrow(() -> new NotFoundException("Категория не существует!"));
         User user = userRepository.findById(userId)
@@ -208,8 +224,8 @@ public class EventServiceImpl implements EventService {
         }
 
         Event event = eventMapper.fromNewDto(eventDto);
-
         Location location = locationRepository.save(eventDto.getLocation());
+
         event.setCategory(category);
         event.setCreatedOn(LocalDateTime.now());
         event.setInitiator(user);
@@ -220,16 +236,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto privateGetEventById(Long userId, Long eventId) {
+    public EventFullDto findByIdAndInitiatorIdPrivateAPI(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено!"));
-        return eventMapper.toDto(event);
+        EventFullDto dto = eventMapper.toDto(event);
+        getConfirmedRequestsAndViews(dto);
+        return dto;
     }
 
     @Override
-    public EventFullDto privatePatchEventByUser(Long userId, Long eventId, UpdateEventUserRequest eventUserRequest) {
+    public EventFullDto patchPrivateAPI(Long userId, Long eventId, UpdateEventUserRequest eventUserRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
@@ -280,7 +298,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<ParticipationRequestDto> privateGetRequests(Long userId, Long eventId) {
+    public List<ParticipationRequestDto> findRequestsByIdAndInitiatorId(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
@@ -291,9 +309,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventRequestStatusUpdateResult privatePatchRequests(Long userId,
-                                                               Long eventId,
-                                                               EventRequestStatusUpdateRequest updateRequest) {
+    public EventRequestStatusUpdateResult patchRequests(Long userId,
+                                                        Long eventId,
+                                                        EventRequestStatusUpdateRequest updateRequest) {
         log.info("{},{},{}", userId, eventId, updateRequest.toString());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
@@ -362,7 +380,7 @@ public class EventServiceImpl implements EventService {
         List<String> uris = eventFullDtos.stream()
                 .map(eventFullDto -> "/events/" + eventFullDto.getId())
                 .collect(Collectors.toList());
-        log.info("{},{},{}", start, end, uris);
+        log.debug("{},{},{}", start, end, uris);
         List<ViewStatsDTO> statsDTOList = webClientService.getStats(start, end, uris, isUniqueIp);
 
         Map<Long, Long> mapOfViews = statsDTOList.stream()
@@ -374,7 +392,7 @@ public class EventServiceImpl implements EventService {
         eventFullDtos.forEach(eventFullDto ->
                 eventFullDto.setViews(mapOfViews.getOrDefault(eventFullDto.getId(), 0L)));
 
-        log.info("{}", mapOfViews);
+        log.debug("{}", mapOfViews);
     }
 
     private void getConfirmedRequestsForEventFullDtos(List<EventFullDto> eventFullDtos) {
@@ -384,8 +402,31 @@ public class EventServiceImpl implements EventService {
 
         List<Request> requests = requestRepository.findByEventIdInAndStatus(eventsIds, RequestStatus.CONFIRMED);
 
-        eventFullDtos.forEach(event -> event.setConfirmedRequests(requests.stream()
-                .filter(request -> request.getEvent().getId().equals(event.getId()))
-                .count()));
+        Map<Long, Long> mapOfRequests = requests.stream()
+                .collect(
+                        Collectors.groupingBy(request -> request.getEvent().getId(),
+                                Collectors.counting())
+                );
+
+        eventFullDtos.forEach(eventFullDto ->
+                eventFullDto.setViews(mapOfRequests.getOrDefault(eventFullDto.getId(), 0L)));
+    }
+
+    private void getConfirmedRequestsAndViews(EventFullDto eventFullDto) {
+        LocalDateTime start = LocalDateTime.now().minusYears(100);
+        LocalDateTime end = LocalDateTime.now().plusYears(100);
+        String uri = "/events/" + eventFullDto.getId();
+        boolean isUniqueIp = false;
+
+        List<ViewStatsDTO> statsDTOList = webClientService.getStats(start, end, Collections.singletonList(uri), isUniqueIp);
+
+        if (!statsDTOList.isEmpty()) {
+            ViewStatsDTO viewStatsDTO = statsDTOList.get(0);
+            eventFullDto.setViews(viewStatsDTO.getHits());
+        }
+
+        List<Request> requests = requestRepository.findByEventIdAndStatus(eventFullDto.getId(), RequestStatus.CONFIRMED);
+
+        eventFullDto.setConfirmedRequests(requests.size());
     }
 }
