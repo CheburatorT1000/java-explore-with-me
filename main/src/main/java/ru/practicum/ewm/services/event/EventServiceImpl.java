@@ -25,6 +25,7 @@ import ru.practicum.ewm.entity.model.Category;
 import ru.practicum.ewm.entity.model.Event;
 import ru.practicum.ewm.entity.model.Location;
 import ru.practicum.ewm.entity.model.Request;
+import ru.practicum.ewm.entity.model.Subscription;
 import ru.practicum.ewm.entity.model.User;
 import ru.practicum.ewm.exception.BadInputDataException;
 import ru.practicum.ewm.exception.ForbiddenException;
@@ -32,6 +33,7 @@ import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.repositorys.CategoryRepository;
 import ru.practicum.ewm.repositorys.LocationRepository;
 import ru.practicum.ewm.repositorys.RequestRepository;
+import ru.practicum.ewm.repositorys.SubscriptionRepository;
 import ru.practicum.ewm.repositorys.UserRepository;
 import ru.practicum.ewm.repositorys.event.EventRepository;
 
@@ -59,6 +61,7 @@ public class EventServiceImpl implements EventService {
     private final LocationRepository locationRepository;
     private final RequestRepository requestRepository;
     private final RequestMapper requestMapper;
+    private final SubscriptionRepository subscriptionRepository;
 
 
     @Override
@@ -363,6 +366,32 @@ public class EventServiceImpl implements EventService {
                         .map(requestMapper::toDto)
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    @Override
+    public List<EventFullDto> findByFollower(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
+        List<Subscription> subscriptions = subscriptionRepository.findByFollowerId(userId);
+
+        List<Long> ids = subscriptions.stream()
+                .map(subscription -> subscription.getPublisher().getId())
+                .collect(Collectors.toList());
+
+        List<Event> events = eventRepository.findByInitiatorIdInAndStateAndEventDateIsAfter(
+                ids,
+                Status.PUBLISHED,
+                LocalDateTime.now()
+        );
+
+        List<EventFullDto> eventFullDtos = events.stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
+
+        getConfirmedRequestsForEventFullDtos(eventFullDtos);
+        getViewsForEventFullDtos(null, null, eventFullDtos);
+
+        return eventFullDtos;
     }
 
 

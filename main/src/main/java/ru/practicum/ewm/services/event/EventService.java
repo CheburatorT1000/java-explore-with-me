@@ -37,4 +37,6 @@ public interface EventService {
     List<ParticipationRequestDto> findRequestsByIdAndInitiatorId(Long userId, Long eventId);
 
     EventRequestStatusUpdateResult patchRequests(Long userId, Long eventId, EventRequestStatusUpdateRequest updateRequest);
+
+    List<EventFullDto> findByFollower(Long userId);
 }

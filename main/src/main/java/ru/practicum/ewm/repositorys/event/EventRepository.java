@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.ewm.entity.enums.Status;
 import ru.practicum.ewm.entity.model.Event;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,4 +18,6 @@ public interface EventRepository extends CustomEventRepository, JpaRepository<Ev
     Set<Event> findByIdIn(Set<Long> events);
 
     Optional<Event> findByIdAndState(Long eventId, Status published);
+
+    List<Event> findByInitiatorIdInAndStateAndEventDateIsAfter(List<Long> ids, Status status, LocalDateTime time);
 }
