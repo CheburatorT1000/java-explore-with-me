@@ -25,7 +25,6 @@ import ru.practicum.ewm.entity.model.Category;
 import ru.practicum.ewm.entity.model.Event;
 import ru.practicum.ewm.entity.model.Location;
 import ru.practicum.ewm.entity.model.Request;
-import ru.practicum.ewm.entity.model.Subscription;
 import ru.practicum.ewm.entity.model.User;
 import ru.practicum.ewm.exception.BadInputDataException;
 import ru.practicum.ewm.exception.ForbiddenException;
@@ -369,17 +368,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> findByFollower(Long userId) {
-        User user = userRepository.findById(userId)
+    public List<EventFullDto> findByFollower(Long followerId) {
+        User user = userRepository.findById(followerId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
-        List<Subscription> subscriptions = subscriptionRepository.findByFollowerId(userId);
 
-        List<Long> ids = subscriptions.stream()
-                .map(subscription -> subscription.getPublisher().getId())
-                .collect(Collectors.toList());
-
-        List<Event> events = eventRepository.findByInitiatorIdInAndStateAndEventDateIsAfter(
-                ids,
+        List<Event> events = eventRepository.getEventsBySubscriptionsCustom(
+                followerId,
                 Status.PUBLISHED,
                 LocalDateTime.now()
         );

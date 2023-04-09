@@ -9,6 +9,7 @@ import ru.practicum.ewm.entity.enums.SortEnum;
 import ru.practicum.ewm.entity.enums.Status;
 import ru.practicum.ewm.entity.model.Event;
 import ru.practicum.ewm.entity.model.QEvent;
+import ru.practicum.ewm.entity.model.QSubscription;
 import ru.practicum.ewm.repositorys.event.CustomEventRepository;
 
 import javax.persistence.EntityManager;
@@ -99,6 +100,21 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
                 .orderBy(QEvent.event.eventDate.desc())
                 .offset(from)
                 .limit(size)
+                .fetch();
+    }
+
+    @Override
+    public List<Event> getEventsBySubscriptionsCustom(Long followerId, Status state, LocalDateTime localDateTime) {
+        QEvent qEvent = QEvent.event;
+        QSubscription qSubscription = QSubscription.subscription;
+
+        return new JPAQuery<>(entityManager)
+                .select(qEvent)
+                .from(qEvent)
+                .rightJoin(qSubscription).on(qEvent.initiator.id.eq(qSubscription.publisher.id))
+                .where(qSubscription.follower.id.eq(followerId)
+                        .and(qEvent.state.eq(state))
+                        .and(qEvent.eventDate.after(localDateTime)))
                 .fetch();
     }
 }
