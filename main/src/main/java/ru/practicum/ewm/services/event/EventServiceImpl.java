@@ -32,6 +32,7 @@ import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.repositorys.CategoryRepository;
 import ru.practicum.ewm.repositorys.LocationRepository;
 import ru.practicum.ewm.repositorys.RequestRepository;
+import ru.practicum.ewm.repositorys.SubscriptionRepository;
 import ru.practicum.ewm.repositorys.UserRepository;
 import ru.practicum.ewm.repositorys.event.EventRepository;
 
@@ -59,6 +60,7 @@ public class EventServiceImpl implements EventService {
     private final LocationRepository locationRepository;
     private final RequestRepository requestRepository;
     private final RequestMapper requestMapper;
+    private final SubscriptionRepository subscriptionRepository;
 
 
     @Override
@@ -363,6 +365,27 @@ public class EventServiceImpl implements EventService {
                         .map(requestMapper::toDto)
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    @Override
+    public List<EventFullDto> findByFollower(Long followerId) {
+        User user = userRepository.findById(followerId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не существует!"));
+
+        List<Event> events = eventRepository.getEventsBySubscriptionsCustom(
+                followerId,
+                Status.PUBLISHED,
+                LocalDateTime.now()
+        );
+
+        List<EventFullDto> eventFullDtos = events.stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
+
+        getConfirmedRequestsForEventFullDtos(eventFullDtos);
+        getViewsForEventFullDtos(null, null, eventFullDtos);
+
+        return eventFullDtos;
     }
 
 

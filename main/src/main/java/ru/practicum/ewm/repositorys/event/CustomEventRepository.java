@@ -24,4 +24,6 @@ public interface CustomEventRepository {
                                         SortEnum sort,
                                         Integer from,
                                         Integer size, Status defaultStatus);
+
+    List<Event> getEventsBySubscriptionsCustom(Long followerId, Status state, LocalDateTime localDateTime);
 }
